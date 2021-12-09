@@ -1,6 +1,7 @@
 package data
 
 import (
+	"crypto/sha1"
 	"database/sql"
 	"encoding/json"
 	"io"
@@ -47,12 +48,14 @@ func GetRealurl(con *db.DBConnection, url string) (real_url string, err error) {
 }
 
 // AddShorturl save Shorturl
-func AddShorturl(con *db.DBConnection, url string) (err error) {
+func AddShorturl(con *db.DBConnection, url string) (short_url string, err error) {
 	var sqlRows *sql.Rows
 
 	ib := con.Builder.NewInsertBuilder()
-	short := "dummyurl"
-	ib.InsertInto(table).Cols("long_url", "short_url").Values(url, short)
+	url_hash := sha1.Sum([]byte(url))
+	short_url = string(url_hash[0:6])
+
+	ib.InsertInto(table).Cols("long_url", "short_url").Values(url, short_url)
 
 	sqlStr, args := ib.Build()
 	log.Println(sqlStr, args)
