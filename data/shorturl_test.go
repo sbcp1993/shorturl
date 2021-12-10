@@ -3,6 +3,7 @@ package data
 import (
 	"os"
 	"shorturl/db"
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -27,7 +28,7 @@ func TestAddShorturl(t *testing.T) {
 			name: "valid case",
 			args: args{
 				con: postgres,
-				url: "https://go.dev/tour/welcome/1",
+				url: "https://docs.microsoft.com/en-us/azure/devops/report/powerbi/data-connector-connect?view=azure-devops",
 			},
 			wantErr: false,
 		},
@@ -36,7 +37,7 @@ func TestAddShorturl(t *testing.T) {
 		url, err := AddShorturl(tt.args.con, tt.args.url)
 		assert.NoError(t, err)
 		assert.NotEmpty(t, url)
-		assert.Len(t, url, 8)
+		assert.Len(t, url.UrlString, 30)
 	}
 }
 
@@ -46,7 +47,7 @@ func TestGetRealurl(t *testing.T) {
 	assert.NoError(t, err)
 	assert.NotNil(t, postgres)
 
-	testurl := "https://gobyexample.com/channels"
+	testurl := "https://docs.microsoft.com/en-us/azure/devops/report/powerbi/data-connector-connect?view=azure-devops"
 	surl, err := AddShorturl(postgres, testurl)
 	assert.NoError(t, err)
 
@@ -64,7 +65,7 @@ func TestGetRealurl(t *testing.T) {
 			name: "valid case",
 			args: args{
 				con: postgres,
-				url: surl.UrlString,
+				url: strings.Split(surl.UrlString, baseurl)[1],
 			},
 		},
 	}

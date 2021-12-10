@@ -18,14 +18,14 @@ url : http://localhost:8080/generate
 request body:
 ```json
 {
-	"url": "https://go.dev/tour/welcome/1"
+	"url": "https://docs.microsoft.com/en-us/azure/devops/report/powerbi/data-connector-connect?view=azure-devops"
 }
 
 ```
 This request return a response with the short url like the following 
 ```json
 {
-    "url":"http://localhost:8080/e2bc82990d2e2346"
+    "url":"http://localhost:8080/e2bc8299"
 }
 ```
 you can now use this short url instead of your long url.
