@@ -10,3 +10,11 @@ services:
       POSTGRES_DB: "postgres"
       POSTGRES_USER: "postgres"
       POSTGRES_PASSWORD: "postgres"
+
+  shorturl:
+    image: sruthicps/shorturl:v1
+    restart: always
+    depends_on: 
+    - postgres
+    ports:
+    - 8080:8080

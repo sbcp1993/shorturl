@@ -4,22 +4,22 @@ import (
 	"crypto/sha1"
 	"database/sql"
 	"encoding/json"
+	"fmt"
 	"io"
 	"log"
 	"shorturl/db"
 )
 
 const table = "gotool.Shorturl"
+const baseurl = "http://localhost:8080"
 
-type Shorturl struct {
-	Id       int64  `json:"id"`
-	LongURL  string `json:"long_url"`
-	ShortURL string `json:"short_url"`
+type Url struct {
+	UrlString string `json:"url"`
 }
 
-func (sd *Shorturl) ToJSON(w io.Writer) error {
+func (surl *Url) ToJSON(w io.Writer) error {
 	e := json.NewEncoder(w)
-	return e.Encode(sd)
+	return e.Encode(surl)
 }
 
 // GetRealurl return Shorturl for the real one
@@ -48,12 +48,14 @@ func GetRealurl(con *db.DBConnection, url string) (real_url string, err error) {
 }
 
 // AddShorturl save Shorturl
-func AddShorturl(con *db.DBConnection, url string) (short_url string, err error) {
+func AddShorturl(con *db.DBConnection, url string) (surl Url, err error) {
 	var sqlRows *sql.Rows
 
 	ib := con.Builder.NewInsertBuilder()
 	url_hash := sha1.Sum([]byte(url))
-	short_url = string(url_hash[0:6])
+
+	short_url := fmt.Sprintf("%x", url_hash[0:8])
+	log.Println("short url...", short_url)
 
 	ib.InsertInto(table).Cols("long_url", "short_url").Values(url, short_url)
 
@@ -65,5 +67,8 @@ func AddShorturl(con *db.DBConnection, url string) (short_url string, err error)
 
 	defer sqlRows.Close()
 
+	surl = Url{
+		UrlString: baseurl + "/" + short_url,
+	}
 	return
 }
